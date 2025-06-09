@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Code Red - Period Tracker</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #ffe6ec;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+    }
+
+    header {
+      background-color: #ff9aa2;
+      width: 100%;
+      padding: 20px;
+      text-align: center;
+      color: white;
+      font-size: 1.8rem;
+      font-weight: bold;
+    }
+
+    .container {
+      max-width: 600px;
+      background: white;
+      margin: 30px;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    button {
+      background-color: #ff9aa2;
+      color: white;
+      padding: 10px 20px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 0.9rem;
+      color: #888;
+    }
+
+    .tips {
+      background-color: #fff0f5;
+      padding: 15px;
+      margin-top: 20px;
+      border-left: 4px solid #ff9aa2;
+      border-radius: 8px;
+    }
+
+    .license {
+      font-size: 0.8rem;
+      color: #777;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <header>🩸 Code Red - Track Your Period</header>
+
+  <div class="container">
+    <p>Hello beautiful! Use this simple tracker to log your period start date and take small notes about your day. 💕</p>
+
+    <label for="date">Period Start Date:</label>
+    <input type="date" id="date" />
+
+    <label for="length">Period Length (days):</label>
+    <input type="number" id="length" min="1" max="10" placeholder="Usually 4–7 days" />
+
+    <label for="cycle">Cycle Length (days):</label>
+    <input type="number" id="cycle" min="20" max="40" placeholder="Default is 28 if unsure" />
+
+    <label for="notes">Notes (mood, flow, cramps...):</label>
+    <textarea id="notes" rows="4" placeholder="Feeling tired, light cramps...?"></textarea>
+
+    <button onclick="saveEntry()">Save Entry</button>
+    <button onclick="viewLast()">View Last Entry</button>
+
+    <p id="lastEntry" style="margin-top: 20px; font-style: italic;"></p>
+
+    <div class="tips">
+      <strong>🌼 Period Tips:</strong>
+      <ul>
+        <li>Drink lots of water and herbal tea ☕</li>
+        <li>Use a heating pad for cramps 🌡</li>
+        <li>Track your cycle regularly 📅</li>
+        <li>Eat iron-rich food like spinach and dates 🥬</li>
+      </ul>
+    </div>
+  </div>
+
+  <footer>
+    Made with love by me, a 15 y/o girlboss (aka Tulika Soni) for all her sisters 🌸<br/>
+    <span class="license">
+      © 2025 Tulika Soni. “Code Red” is licensed under
+      <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a>.
+      No commercial use allowed without permission.
+    </span>
+  </footer>
+
+  <script>
+    function saveEntry() {
+      const date = document.getElementById('date').value;
+      const length = document.getElementById('length').value;
+      const cycle = document.getElementById('cycle').value || 28;
+      const notes = document.getElementById('notes').value;
+
+      if (!date || !length) {
+        alert('Please fill out all required fields!');
+        return;
+      }
+
+      const entry = {
+        date,
+        length: parseInt(length),
+        cycle: parseInt(cycle),
+        notes,
+        nextPeriod: calculateNextPeriod(date, parseInt(cycle))
+      };
+
+      localStorage.setItem('codeRedLastEntry', JSON.stringify(entry));
+      alert('Entry saved! 📀');
+    }
+
+    function viewLast() {
+      const last = localStorage.getItem('codeRedLastEntry');
+      if (!last) {
+        document.getElementById('lastEntry').textContent = 'No previous data found.';
+        return;
+      }
+
+      const entry = JSON.parse(last);
+      document.getElementById('lastEntry').innerHTML =
+        `Last saved entry:<br>
+         Period started on: <strong>${entry.date}</strong><br>
+         Period lasted: <strong>${entry.length} days</strong><br>
+         Cycle length: <strong>${entry.cycle} days</strong><br>
+         Notes: ${entry.notes}<br>
+         Next period may start around: <strong>${entry.nextPeriod}</strong>`;
+    }
+
+    function calculateNextPeriod(startDate, cycleLength) {
+      const date = new Date(startDate);
+      date.setDate(date.getDate() + cycleLength);
+      return date.toISOString().split('T')[0];
+    }
+  </script>
+</body>
+</html>
